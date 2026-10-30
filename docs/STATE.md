@@ -3,7 +3,7 @@
 ## Inspeção
 
 - Código consolidado em `/home/felipe/Documentos/gps fak`; histórico local preservado até `8bab1b1`.
-- Pasta de destino estava vazia. Origem `/home/felipe/meu-projeto` e checkout auxiliar `/home/felipe/projetos/fake-loc` foram preservados.
+- Pasta de destino estava vazia. `/home/felipe/meu-projeto` e checkout pai `/home/felipe/projetos` foram preservados. O checkout pai tem o commit `b3b8a0d` com README curto; será integrado sem alterar seus diretórios irmãos.
 - URL remota obtida da configuração local do checkout auxiliar vazio. Consulta remota falhou por DNS; credencial `gh` local inválida.
 - Ambiente do agente: Node v24.22.2, OpenJDK 21.0.12.1; Android Studio via Flatpak, sem SDK encontrado/configurado.
 - `npm ci --offline --ignore-scripts`, typecheck, 10 testes, build Vite e ESLint passaram no diretório canônico; relatório em [TEST-REPORT.md](TEST-REPORT.md).

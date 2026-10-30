@@ -8,7 +8,9 @@ O aplicativo web é estático e não precisa de Supabase para uso básico. A con
 - Build Command: `npm run build`
 - Output Directory: `dist`
 
-O runtime Node está fixado a `20.x` em `web/package.json`. A regra SPA encaminha caminhos não reconhecidos ao documento inicial; arquivos estáticos continuam servidos como assets.
+O runtime Node está fixado a `22.x` em `web/package.json`, compatível com as versões de jsdom e undici travadas no lockfile e disponível na Vercel. A regra SPA encaminha caminhos não reconhecidos ao documento inicial; arquivos estáticos continuam servidos como assets.
+
+Referências oficiais: [configuração `vercel.json`](https://vercel.com/docs/project-configuration/vercel-json), [Vite na Vercel](https://vercel.com/docs/frameworks/frontend/vite), [versões Node suportadas](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
 
 ## Estado deste ambiente
 
