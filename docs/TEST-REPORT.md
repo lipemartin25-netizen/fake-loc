@@ -45,6 +45,9 @@ Na validação anterior não houve testes instrumentados, Playwright/E2E, cobert
 | raiz | `scripts/doctor.sh` | Detectou DNS/HTTPS bloqueados, autenticação GitHub válida, bind local negado, Node 22 presente e SDK Android ausente | 0 (diagnóstico) |
 | raiz | `scripts/publish-github.sh --dry-run` | Allowlist de 18 arquivos revisada; nenhuma alteração Git feita | 0 |
 | raiz | `scripts/publish-github.sh` | Criou commit local `e34e9f29084bdda705a557367425adbd2fb345f7`; consulta DNS/remota falhou e o script não enviou push nem criou PR | 6 |
+| raiz | `bash -n scripts/doctor.sh scripts/publish-github.sh` após corrigir retomada de commits já feitos | Sintaxe aprovada; dry-run com working tree limpo continua tentando consultar o remoto, sem modificar arquivos | 0 |
+| raiz | `scripts/publish-github.sh --dry-run` após correção de retomada | Arquivo aprovado revisado; remoto inacessível reportado; nenhuma alteração Git feita | 0 |
+| raiz | `scripts/publish-github.sh` após correção de retomada | Commit local da revisão do script criado; fetch/push segue bloqueado por DNS. PR não criado | 6 |
 | raiz | `exec_command` com `sandbox_permissions=require_escalated` para GitHub e Vite | A política da sessão recusou escalonamento (`sandbox_approval: false`); comandos externos não foram executados | recusado pela ferramenta |
 
 O `web/.env.example` está presente e não é ignorado; `web/.env.local` continua ignorado. A sessão não permitiu iniciar Vite/bind para verificar HTTP. Vercel não foi configurada nem publicada: CLI ausente e domínio público não verificado. O APK não existe; Android SDK não foi localizado.

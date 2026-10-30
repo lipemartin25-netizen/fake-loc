@@ -2,7 +2,7 @@
 
 ## Inspeção
 
-- Código consolidado em `/home/felipe/Documentos/gps fak`; branch `codex/fake-loc-rebuild`, último commit local `e34e9f2` (integração Supabase e scripts de publicação).
+- Código consolidado em `/home/felipe/Documentos/gps fak`; branch `codex/fake-loc-rebuild`; integração e scripts estão commitados localmente (consulte `git log` para o hash atual).
 - Pasta de destino estava vazia. `/home/felipe/meu-projeto` e checkout pai `/home/felipe/projetos` foram preservados. O commit local `b3b8a0d` foi integrado como segundo pai de `f9d9925`, sem alterar diretórios irmãos.
 - `gh auth status` passou, mas DNS para `github.com` falhou. Pedido de execução fora do sandbox foi recusado pela política da sessão; push/PR não confirmados.
 - Node v22.23.4/npm 10.9.9 usados na validação atual; OpenJDK 21.0.12.1; Android SDK não localizado.

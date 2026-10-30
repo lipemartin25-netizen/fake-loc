@@ -52,12 +52,14 @@ for file in "${approved[@]}"; do
     if [[ -e "$file" || -L "$file" ]]; then changed+=("$file"); else echo "Erro: caminho aprovado ausente: $file" >&2; exit 3; fi
   fi
 done
-if ((${#changed[@]} == 0)); then echo 'Não há alterações aprovadas para publicar.'; exit 0; fi
-
-echo 'Arquivos aprovados para publicação:'
-printf '  %s\n' "${changed[@]}"
-echo 'Outras alterações do checkout serão preservadas e não serão incluídas.'
-git diff --stat HEAD -- "${changed[@]}"
+if ((${#changed[@]})); then
+  echo 'Arquivos aprovados para publicação:'
+  printf '  %s\n' "${changed[@]}"
+  echo 'Outras alterações do checkout serão preservadas e não serão incluídas.'
+  git diff --stat HEAD -- "${changed[@]}"
+else
+  echo 'Nenhum arquivo aprovado pendente; verificarei commits locais existentes.'
+fi
 
 # Report filenames only; never print a possible credential value.
 if ! python3 - "${changed[@]}" <<'PY'
@@ -92,29 +94,44 @@ if ! command -v gh >/dev/null 2>&1 || ! gh auth status >/dev/null 2>&1; then
 fi
 
 if $dry_run; then
+  if remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
+    remote_hash=${remote_line%%$'\t'*}
+    if [[ -n "$remote_hash" ]]; then echo "DRY-RUN remoto consultado: ${remote_hash:0:12}"; else echo 'DRY-RUN remoto consultado: branch ainda não existe'; fi
+  else
+    echo 'DRY-RUN: remoto inacessível nesta sessão; nenhuma alteração foi feita.'
+  fi
   echo 'DRY-RUN: nenhum arquivo foi staged, nenhum commit/push/PR foi criado.'
-  echo "Branch alvo: $BRANCH. Arquivos aprovados: ${#changed[@]}."
+  echo "Branch alvo: $BRANCH. Arquivos aprovados pendentes: ${#changed[@]}"
   exit 0
 fi
 
 remote_hash=""
 if remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
   remote_hash=${remote_line%%$'\t'*}
-  if [[ -n "$remote_hash" ]] && ! git merge-base --is-ancestor "$remote_hash" HEAD; then
-    echo 'Branch local e remota divergiram ou remoto está adiante; nada será sobrescrito.' >&2
-    echo 'Integre a branch remota com merge/rebase revisado e rode novamente.' >&2
-    exit 7
+  if [[ -n "$remote_hash" ]]; then
+    if ! gh_git fetch --no-tags origin "$BRANCH" >/dev/null 2>&1; then
+      echo 'Remote consultado, mas fetch falhou; nenhum commit remoto será sobrescrito.' >&2
+      exit 6
+    fi
+    remote_hash=$(git rev-parse FETCH_HEAD)
+    if ! git merge-base --is-ancestor "$remote_hash" HEAD; then
+      echo 'Branch local e remota divergiram ou remoto está adiante; nada será sobrescrito.' >&2
+      echo 'Integre a branch remota com merge/rebase revisado e rode novamente.' >&2
+      exit 7
+    fi
   fi
 else
   echo 'Aviso: origin não pôde ser consultado; será feito apenas o commit local, sem tentativa cega de push.' >&2
 fi
 
-git add -- "${changed[@]}"
-echo 'Revisão do diff staged:'
-git diff --cached --check
-git diff --cached --stat -- "${changed[@]}"
-if ! git diff --cached --quiet -- "${changed[@]}"; then
-  git commit --only -m "Configure Fake Loc Supabase integration" -- "${changed[@]}"
+if ((${#changed[@]})); then
+  git add -- "${changed[@]}"
+  echo 'Revisão do diff staged:'
+  git diff --cached --check
+  git diff --cached --stat -- "${changed[@]}"
+  if ! git diff --cached --quiet -- "${changed[@]}"; then
+    git commit --only -m "Configure Fake Loc Supabase integration" -- "${changed[@]}"
+  fi
 fi
 
 if ! remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
@@ -122,9 +139,16 @@ if ! remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/n
   exit 6
 fi
 remote_hash=${remote_line%%$'\t'*}
-if [[ -n "$remote_hash" ]] && ! git merge-base --is-ancestor "$remote_hash" HEAD; then
-  echo 'O remoto avançou durante a preparação; commit local preservado, push cancelado.' >&2
-  exit 8
+if [[ -n "$remote_hash" ]]; then
+  if ! gh_git fetch --no-tags origin "$BRANCH" >/dev/null 2>&1; then
+    echo 'Commit local preservado; fetch remoto falhou e o push foi cancelado.' >&2
+    exit 8
+  fi
+  remote_hash=$(git rev-parse FETCH_HEAD)
+  if ! git merge-base --is-ancestor "$remote_hash" HEAD; then
+    echo 'O remoto avançou/divergiu durante a preparação; commit local preservado e push cancelado.' >&2
+    exit 8
+  fi
 fi
 gh_git push -u origin "$BRANCH"
 
