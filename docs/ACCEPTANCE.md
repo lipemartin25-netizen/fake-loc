@@ -5,25 +5,25 @@ Estados usados: Implementado e testado; Implementado, não executado no ambiente
 | Requisito | Android | Web | Estado / teste / evidência / limitação |
 |---|---|---|---|
 | Mapa | Parcial | Parcial | Web canvas ilustrativo clicável; sem tiles/zoom/pan real. Android sem mapa. |
-| Coordenadas manuais | Parcial | Implementado | Web valida limites e vírgula decimal; testes escritos, não executados. Android valida faixa em tela. |
-| Teleporte interno | Parcial | Implementado | Atualiza posição local do simulador; web sem GPS sistêmico. |
+| Coordenadas manuais | Implementado, não executado no ambiente | Implementado e testado | Web valida limites/vírgula decimal; Android valida limites, app ainda não construído. |
+| Teleporte interno | Parcial | Implementado e testado | Ação web atualiza posição simulada; web sem GPS sistêmico. |
 | Busca explícita | Bloqueado | Bloqueado | Provedor e política ainda não configurados. |
-| Favoritos | Bloqueado | Parcial | Web localStorage persistido; adicionar e excluir, sem import/export. |
+| Favoritos | Bloqueado | Implementado e testado | Web localStorage; criar, selecionar, excluir, JSON versionado import/export e duplicatas ignoradas. |
 | Joystick | Bloqueado | Bloqueado | Não implementado. |
 | Rota de dois pontos | Bloqueado | Parcial | Movimento linear geodésico no motor UI; sem editor de rota. |
 | Rota multiponto | Bloqueado | Bloqueado | Não implementado. |
 | Perfis | Bloqueado | Bloqueado | Velocidade numérica simples na web. |
-| Pausa/retomada | Parcial | Parcial | Controle de estado simples; testes ainda não executados. |
+| Pausa/retomada | Parcial | Implementado e testado | Controle de estado simples; teste com relógio falso confirma pausa sem deslocamento. |
 | Loop | Bloqueado | Bloqueado | Não implementado. |
 | Ida/volta | Bloqueado | Bloqueado | Não implementado. |
-| GPX | Bloqueado | Bloqueado | Não implementado. |
-| JSON | Bloqueado | Parcial | Contrato schema de favoritos; interface de importação/exportação pendente. |
-| Backup | Bloqueado | Bloqueado | Não implementado. |
+| GPX | Bloqueado | Parcial | Web importa/exporta GPX 1.1, waypoints, rotas e segmentos separados; round-trip testado. Playback e escolha de múltiplas rotas não implementados. |
+| JSON | Bloqueado | Implementado e testado | Importação/exportação versionada de favoritos; valida registros, limites e duplicatas. |
+| Backup | Bloqueado | Parcial | Exporta favoritos; backup completo de rotas/perfis/preferências/histórico ausente. |
 | Histórico | Bloqueado | Bloqueado | Não implementado. |
-| Persistência | Bloqueado | Parcial | Web localStorage; IndexedDB e persistência Android pendentes. |
+| Persistência | Bloqueado | Parcial | Favoritos web em localStorage; IndexedDB e persistência Android pendentes. |
 | Diagnóstico | Bloqueado | Bloqueado | Script PowerShell inicial existe; não executado em Windows. |
 | Mock Android | Bloqueado | Fora do escopo | Adaptador oficial ainda não implementado; web não altera GPS do dispositivo. |
 | Serviço em primeiro plano | Bloqueado | Fora do escopo | Android sem serviço; não afirmado como funcional. |
 | Acessibilidade | Parcial | Parcial | Labels básicos, alertas e botões nativos; auditoria pendente. |
-| Build | Bloqueado | Bloqueado | Web sem dependências instaladas; Android sem JDK/SDK. |
+| Build | Bloqueado | Implementado e testado | Build web Vite passou; Android bloqueado por SDK/rede Gradle. |
 | Instalação | Bloqueado | Fora do escopo | APK não gerado; não testado em aparelho. |

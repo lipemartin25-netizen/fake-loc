@@ -8,7 +8,7 @@ O checkout disponível continha apenas um README e um commit local (`9185436`), 
 
 ## Web
 
-Requer Node.js 20+. Em `web/`: `npm ci`, `npm run dev`, `npm run typecheck`, `npm test` e `npm run build`. Favoritos são armazenados localmente no navegador. O mapa esquemático funciona sem provedor de tiles; mapas reais e busca dependem de serviços externos e ainda não estão configurados.
+Requer Node.js 20+. Em `web/`: `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test` e `npm run build`. Favoritos são armazenados localmente no navegador. O mapa esquemático funciona sem provedor de tiles; mapas reais e busca dependem de serviços externos e ainda não estão configurados.
 
 ## Android
 
