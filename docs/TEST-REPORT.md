@@ -31,4 +31,20 @@ Validação web final executada com Node v22.23.4/npm 10.9.9, conforme `engines.
 
 O APK não foi gerado. Não foi possível compilar ou executar testes Android porque a distribuição Gradle não está em cache e a rede bloqueia seu download. O Android SDK não foi localizado: `ANDROID_HOME`/`ANDROID_SDK_ROOT` não definidos e não foram encontrados `sdkmanager`, `adb` ou plataforma `android.jar` nos caminhos examinados. Java disponível: OpenJDK 21.0.12.1. Android Studio está instalado via Flatpak, mas não há SDK identificado pela sessão do agente.
 
-Sem testes instrumentados, Playwright/E2E, cobertura ou validação em aparelho. Build web passou; servidor HTTP local e URL pública não foram confirmados porque a sessão não permite abrir sockets e não tem autenticação/remoto acessível. Os 10 testes web cobrem coordenadas pt-BR, limites, distância, rumo, antimeridiano, GPX/JSON, DTD, teleporte e tela de pausa.
+Na validação anterior não houve testes instrumentados, Playwright/E2E, cobertura ou validação em aparelho. Build web passou; servidor HTTP local e URL pública não foram confirmados porque a sessão não permitia abrir sockets. Os 10 testes daquela execução cobriam coordenadas pt-BR, limites, distância, rumo, antimeridiano, GPX/JSON, DTD, teleporte e pausa; a execução atual está abaixo.
+
+## Continuação — 2026-10-30
+
+| Diretório | Comando | Resultado | Exit code |
+|---|---|---|---|
+| `web/` | `PATH="/home/felipe/.nvm/versions/node/v22.23.4/bin:$PATH" npm run lint` | ESLint aprovado | 0 |
+| `web/` | `PATH="/home/felipe/.nvm/versions/node/v22.23.4/bin:$PATH" npm run typecheck` | Checagem TypeScript aprovada | 0 |
+| `web/` | `PATH="/home/felipe/.nvm/versions/node/v22.23.4/bin:$PATH" npm test` | 4 arquivos; 12 aprovados, 0 falhas, 0 ignorados | 0 |
+| `web/` | `PATH="/home/felipe/.nvm/versions/node/v22.23.4/bin:$PATH" npm run build` | Build Vite aprovado em `web/dist` | 0 |
+| raiz | `bash -n scripts/doctor.sh scripts/publish-github.sh` | Sintaxe dos dois scripts aprovada | 0 |
+| raiz | `scripts/doctor.sh` | Detectou DNS/HTTPS bloqueados, autenticação GitHub válida, bind local negado, Node 22 presente e SDK Android ausente | 0 (diagnóstico) |
+| raiz | `scripts/publish-github.sh --dry-run` | Allowlist de 18 arquivos revisada; nenhuma alteração Git feita | 0 |
+| raiz | `scripts/publish-github.sh` | Criou commit local `e34e9f29084bdda705a557367425adbd2fb345f7`; consulta DNS/remota falhou e o script não enviou push nem criou PR | 6 |
+| raiz | `exec_command` com `sandbox_permissions=require_escalated` para GitHub e Vite | A política da sessão recusou escalonamento (`sandbox_approval: false`); comandos externos não foram executados | recusado pela ferramenta |
+
+O `web/.env.example` está presente e não é ignorado; `web/.env.local` continua ignorado. A sessão não permitiu iniciar Vite/bind para verificar HTTP. Vercel não foi configurada nem publicada: CLI ausente e domínio público não verificado. O APK não existe; Android SDK não foi localizado.
