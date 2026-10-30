@@ -8,7 +8,7 @@ Estados usados: Implementado e testado; Implementado, não executado no ambiente
 | Coordenadas manuais | Implementado, não executado no ambiente | Implementado e testado | Web valida limites/vírgula decimal; Android valida limites, app ainda não construído. |
 | Teleporte interno | Parcial | Implementado e testado | Ação web atualiza posição simulada; web sem GPS sistêmico. |
 | Busca explícita | Bloqueado | Bloqueado | Provedor e política ainda não configurados. |
-| Favoritos | Bloqueado | Implementado e testado | Web localStorage; criar, selecionar, excluir, JSON versionado import/export e duplicatas ignoradas. |
+| Favoritos | Bloqueado | Implementado e testado | Web localStorage; criar, selecionar, excluir, JSON versionado; sincronização opt-in Supabase com RLS e teste de cliente isolado. |
 | Joystick | Bloqueado | Bloqueado | Não implementado. |
 | Rota de dois pontos | Bloqueado | Parcial | Movimento linear geodésico no motor UI; sem editor de rota. |
 | Rota multiponto | Bloqueado | Bloqueado | Não implementado. |
@@ -21,6 +21,8 @@ Estados usados: Implementado e testado; Implementado, não executado no ambiente
 | Backup | Bloqueado | Parcial | Exporta favoritos; backup completo de rotas/perfis/preferências/histórico ausente. |
 | Histórico | Bloqueado | Bloqueado | Não implementado. |
 | Persistência | Bloqueado | Parcial | Favoritos web em localStorage; IndexedDB e persistência Android pendentes. |
+| Conta e nuvem Supabase | Fora do escopo | Implementado e testado parcialmente | Auth por e-mail e merge de favoritos no cliente; testes HTTP simulados. Sem teste de conta real neste ambiente. Rotas/perfis têm schema RLS, ainda sem sync de UI. |
+| Conta e nuvem Supabase | Fora do escopo | Implementado e testado parcialmente | Auth por e-mail e merge de favoritos no cliente; testes HTTP simulados. Sem teste de conta real neste ambiente. Rotas/perfis têm schema RLS, ainda sem sync de UI. |
 | Diagnóstico | Bloqueado | Bloqueado | Script PowerShell inicial existe; não executado em Windows. |
 | Mock Android | Bloqueado | Fora do escopo | Adaptador oficial ainda não implementado; web não altera GPS do dispositivo. |
 | Serviço em primeiro plano | Bloqueado | Fora do escopo | Android sem serviço; não afirmado como funcional. |

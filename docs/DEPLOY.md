@@ -14,6 +14,10 @@ Referências oficiais: [configuração `vercel.json`](https://vercel.com/docs/pr
 
 ## Estado deste ambiente
 
-Nenhum deploy foi executado nem URL pública foi verificada. O token GitHub local falha em `gh auth status`; a rede não resolve `github.com`. Não há Vercel CLI nem integração Vercel conectada. O próximo passo de autenticação GitHub é executar `gh auth login --web` no terminal normal do usuário e concluir o fluxo oficial no navegador. Depois será necessário permitir conectividade à rede para confirmar o remoto, enviar a branch e ligar o projeto na Vercel. Não cole tokens no chat.
+Nenhum deploy foi executado nem URL pública foi verificada. `gh auth status` passou, mas esta sessão não resolve GitHub/npm/Vercel por DNS e o bind local está bloqueado; `vercel` CLI não está instalado. Use `scripts/doctor.sh` no terminal normal para separar esses estados. Não cole tokens no chat.
 
-Favoritos são locais ao navegador e à origem do site. Publicar não transfere dados entre localhost e a URL pública. Supabase não foi configurado nem é necessário para o modo local.
+Configuração Vercel esperada: Root Directory `web`; Framework `Vite`; Install `npm ci`; Build `npm run build`; Output `dist`. `web/vercel.json` fixa build e saída; Root Directory continua sendo configuração do projeto Vercel. Cadastre `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` em Environment Variables para Production e Preview, sem incluir uma chave secret/service-role, e faça redeploy. Nenhuma variável foi enviada à Vercel nesta sessão.
+
+URLs de Auth Supabase: durante desenvolvimento local, Site URL `http://localhost:5173` e Redirect URL permitida `http://localhost:5173/**`. Após confirmar o domínio Vercel, defina o Site URL para `https://<dominio-vercel-confirmado>` e permita `https://<dominio-vercel-confirmado>/**`; mantenha o endereço local permitido apenas para desenvolvimento. O domínio de produção ainda não existe/foi verificado, então o placeholder não deve ser cadastrado literalmente. As configurações de Auth não foram alteradas nesta sessão.
+
+Favoritos podem ficar locais ao navegador e à origem do site. A sincronização Supabase opcional exige `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` no ambiente de build/deploy; sem elas, o modo local permanece. Ver `SUPABASE_SETUP.md` para escopo e limitações.

@@ -9,6 +9,15 @@ Data do ambiente: 2026-10-30. Diretório canônico: `/home/felipe/Documentos/gps
 | `web/` | `npm test -- --reporter=verbose` | 3 arquivos; 10 testes aprovados; 0 falhas/ignorados | 0 |
 | `web/` | `npm run build` | Vite gerou `web/dist/` | 0 |
 | `web/` | `npm run lint` | ESLint passou sem avisos | 0 |
+| `web/` | `npm run lint` (alterações Supabase) | ESLint passou | 0 |
+| `web/` | `npm run typecheck` (alterações Supabase) | TypeScript passou | 0 |
+| `web/` | `npm test` (alterações Supabase) | 4 arquivos; 12 testes aprovados; 0 falhas/ignorados. Inclui dois testes HTTP do cliente Supabase mockado, sem conta/provedor real | 0 |
+| `web/` | `npm run build` (alterações Supabase) | Vite gerou `web/dist/` | 0 |
+| Supabase `cejivififvlhnwyeajwc` | `apply_migration: fake_loc_initial_schema` | Aplicado com sucesso; substituiu 40 tabelas do schema `public` por `favorites`, `routes` e `movement_profiles` | sucesso informado pela ferramenta |
+| Supabase `cejivififvlhnwyeajwc` | `apply_migration: remove_legacy_product_hooks` | Aplicado com sucesso; removeu o gatilho legado de `auth.users` que dependia da tabela antiga `profiles` e RPCs antigos | sucesso informado pela ferramenta |
+| Supabase `cejivififvlhnwyeajwc` | Consulta `information_schema.tables` e `list_tables` | Confirmadas 3 tabelas Fake Loc, todas com RLS ativo e sem linhas | sucesso informado pela ferramenta |
+| Supabase `cejivififvlhnwyeajwc` | `get_advisors(security)` após as migrations | Sem aviso de rotina `SECURITY DEFINER` pública; 2 avisos restantes para extensões legadas `vector` e `pg_trgm` no schema `public` | sucesso informado pela ferramenta |
+| Ambiente | `curl -L --max-time 12 -sS https://supabase.com/changelog.md` | DNS local não resolveu `supabase.com`; documentação Supabase foi consultada pela busca oficial de docs. O changelog em Markdown não pôde ser baixado por curl | 6 |
 | `web/` | Node 20.20.2: `npm ci --offline` + typecheck + testes | Instalação/typecheck passaram com avisos de engine; Vitest falhou ao carregar `undici` (`Cannot read properties of undefined (reading 'bind')`), pois jsdom 30/undici 8 exigem Node 22+. Projeto ajustado para Node 22 | 1 no Vitest |
 | `android/` | `./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug` | Wrapper iniciou, mas download do Gradle bloqueado pelo ambiente: `SocketException: Operation not permitted` | 1 |
 | raiz | Compilação isolada de `android/app/src/main/java/br/com/fakeloc/app/Geo.kt` com Kotlin 2.4.0 e checks via Kotlin runner | Motor Kotlin compilou; distância SP–Rio, rumo cardinal e antimeridiano passaram | 0 |
