@@ -15,7 +15,7 @@ Data: 2026-10-30.
 
 `/home/felipe/projetos` é o checkout pai associado ao remoto GitHub confirmado. Sua branch `main` está no commit local `b3b8a0d` (`first commit`), que contém somente `README.md` com `# fake-loc`. Tem cinco diretórios de outros projetos como arquivos não rastreados; nenhum deles foi copiado ou movido. O checkout pai foi preservado sem alterações.
 
-O commit `b3b8a0d` será integrado ao histórico consolidado preservando a descrição útil já escrita para o Fake Loc. O estado atual no servidor GitHub não foi consultável porque DNS falhou; o README local não é prova do conteúdo atual do remoto.
+O commit `b3b8a0d` foi integrado como segundo pai do merge `f9d9925`. Seu README original (`# fake-loc`) foi incorporado à versão canônica mais completa e o commit permanece no histórico. O estado atual no servidor GitHub não foi consultável porque DNS falhou; o README local não é prova do conteúdo atual do remoto.
 
 ## Subdiretório Git vazio encontrado
 
