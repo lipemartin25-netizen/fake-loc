@@ -17,7 +17,7 @@ cd "$ROOT"
 BRANCH=codex/fake-loc-rebuild
 EXPECTED_REPO=lipemartin25-netizen/fake-loc
 gh_git() {
-  GIT_TERMINAL_PROMPT=0 git \
+  GIT_TERMINAL_PROMPT=0 timeout 30 git \
     -c credential.helper= \
     -c 'credential.helper=!gh auth git-credential' \
     -c 'url.https://github.com/.insteadOf=git@github.com:' \
@@ -36,7 +36,7 @@ esac
 # Explicit allowlist: no glob, git add ., or automatic inclusion of user files.
 approved=(
   README.md docs/ACCEPTANCE.md docs/ARCHITECTURE.md docs/DEPLOY.md docs/PRIVACY.md
-  docs/STATE.md docs/TEST-REPORT.md docs/SUPABASE_SETUP.md
+  docs/STATE.md docs/TEST-REPORT.md docs/SUPABASE_SETUP.md .gitignore
   supabase/schema.sql supabase/remove_legacy_hooks.sql supabase/restrict_rls_event_trigger_execution.sql
   web/src/ui/App.tsx web/src/cloud.ts web/src/cloud.test.ts web/src/vite-env.d.ts web/.env.example
   scripts/doctor.sh scripts/publish-github.sh
@@ -94,9 +94,9 @@ if ! command -v gh >/dev/null 2>&1 || ! gh auth status >/dev/null 2>&1; then
 fi
 
 if $dry_run; then
-  if remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
+  if remote_line=$(gh_git ls-remote --heads origin "$BRANCH"); then
     remote_hash=${remote_line%%$'\t'*}
-    if [[ -n "$remote_hash" ]]; then echo "DRY-RUN remoto consultado: ${remote_hash:0:12}"; else echo 'DRY-RUN remoto consultado: branch ainda não existe'; fi
+    if [[ -n "$remote_hash" ]]; then echo "DRY-RUN remoto consultado: ${remote_hash:0:12}"; else echo 'DRY-RUN remoto consultado: branch ainda não existe no remoto'; fi
   else
     echo 'DRY-RUN: remoto inacessível nesta sessão; nenhuma alteração foi feita.'
   fi
@@ -106,10 +106,10 @@ if $dry_run; then
 fi
 
 remote_hash=""
-if remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
+if remote_line=$(gh_git ls-remote --heads origin "$BRANCH"); then
   remote_hash=${remote_line%%$'\t'*}
   if [[ -n "$remote_hash" ]]; then
-    if ! gh_git fetch --no-tags origin "$BRANCH" >/dev/null 2>&1; then
+    if ! gh_git fetch --no-tags origin "$BRANCH"; then
       echo 'Remote consultado, mas fetch falhou; nenhum commit remoto será sobrescrito.' >&2
       exit 6
     fi
@@ -130,17 +130,23 @@ if ((${#changed[@]})); then
   git diff --cached --check
   git diff --cached --stat -- "${changed[@]}"
   if ! git diff --cached --quiet -- "${changed[@]}"; then
-    git commit --only -m "Configure Fake Loc Supabase integration" -- "${changed[@]}"
+    commit_message='Prepare Fake Loc Vercel project deployment'
+    for file in "${changed[@]}"; do
+      case "$file" in
+        web/src/cloud.ts|web/src/ui/App.tsx|supabase/*.sql) commit_message='Configure Fake Loc Supabase integration'; break ;;
+      esac
+    done
+    git commit --only -m "$commit_message" -- "${changed[@]}"
   fi
 fi
 
-if ! remote_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH" 2>/dev/null); then
+if ! remote_line=$(gh_git ls-remote --heads origin "$BRANCH"); then
   echo 'Commit local preservado; push bloqueado porque origin segue inacessível. Execute scripts/doctor.sh no terminal normal.' >&2
   exit 6
 fi
 remote_hash=${remote_line%%$'\t'*}
 if [[ -n "$remote_hash" ]]; then
-  if ! gh_git fetch --no-tags origin "$BRANCH" >/dev/null 2>&1; then
+  if ! gh_git fetch --no-tags origin "$BRANCH"; then
     echo 'Commit local preservado; fetch remoto falhou e o push foi cancelado.' >&2
     exit 8
   fi
@@ -153,7 +159,7 @@ fi
 gh_git push -u origin "$BRANCH"
 
 local_hash=$(git rev-parse HEAD)
-verify_line=$(timeout 15 gh_git ls-remote --heads origin "$BRANCH") || { echo 'Push enviado, mas a verificação remota falhou.' >&2; exit 9; }
+verify_line=$(gh_git ls-remote --heads origin "$BRANCH") || { echo 'Push enviado, mas a verificação remota falhou.' >&2; exit 9; }
 verify_hash=${verify_line%%$'\t'*}
 [[ "$verify_hash" == "$local_hash" ]] || { echo 'Hash remoto não corresponde ao commit local.' >&2; exit 9; }
 echo "Push verificado: $BRANCH $local_hash"

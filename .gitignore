@@ -11,3 +11,5 @@ local.properties
 !.env.example
 .idea/
 .vscode/
+.vercel/
+**/.vercel/

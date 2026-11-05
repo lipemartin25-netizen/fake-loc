@@ -51,3 +51,17 @@ Na validação anterior não houve testes instrumentados, Playwright/E2E, cobert
 | raiz | `exec_command` com `sandbox_permissions=require_escalated` para GitHub e Vite | A política da sessão recusou escalonamento (`sandbox_approval: false`); comandos externos não foram executados | recusado pela ferramenta |
 
 O `web/.env.example` está presente e não é ignorado; `web/.env.local` continua ignorado. A sessão não permitiu iniciar Vite/bind para verificar HTTP. Vercel não foi configurada nem publicada: CLI ausente e domínio público não verificado. O APK não existe; Android SDK não foi localizado.
+
+## Continuação — 2026-11-05
+
+| Diretório | Comando | Resultado | Exit code |
+|---|---|---|---|
+| raiz | `bash scripts/doctor.sh` | DNS/HTTPS aprovados (github.com, registry.npmjs.org, vercel.com, supabase.co); GitHub CLI autenticado; bind 127.0.0.1:5173 permitido; Node 22 (v22.23.4) detectado; JDK 21 detectado; Android SDK ausente | 0 |
+| `web/` | `npm run lint` (com Node 22.23.4) | ESLint aprovado sem erros | 0 |
+| `web/` | `npm run typecheck` (com Node 22.23.4) | TypeScript sem erros | 0 |
+| `web/` | `npm test` (com Node 22.23.4) | 4 suítes, 12 testes aprovados sem falhas | 0 |
+| `web/` | `npm run build` (com Node 22.23.4) | Build Vite gerou `web/dist` em 771ms | 0 |
+| `android/` | `./gradlew --version` | Wrapper baixou Gradle 8.9 e executou com OpenJDK 21 | 0 |
+| `android/` | `./gradlew test` | Falhou por ausência de Android SDK configurado (`ANDROID_HOME` ou `local.properties` ausentes) | 1 |
+| raiz | `bash -n scripts/publish-github.sh` | Sintaxe do script de publicação aprovada após correção de timeout interno | 0 |
+| raiz | `bash scripts/publish-github.sh --dry-run` | Remoto consultado com sucesso; branch remota `codex/fake-loc-rebuild` confirmada como ainda não existente | 0 |

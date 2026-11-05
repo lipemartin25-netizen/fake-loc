@@ -8,6 +8,12 @@ O aplicativo web é estático e não precisa de Supabase para uso básico. A con
 - Build Command: `npm run build`
 - Output Directory: `dist`
 
+## Projeto Vercel selecionado
+
+O projeto indicado pelo proprietário é [all-smal-things](https://vercel.com/felipe-martins-projects-64e8eb2d/all-smal-things), no scope `felipe-martins-projects-64e8eb2d`. Para ligar o checkout a esse projeto após autenticar o CLI, execute na pasta `web/`: `vercel link --project all-smal-things`, confirme o scope e configure Root Directory `web` nas Project Settings. O diretório local `.vercel/` é ignorado pelo Git.
+
+No dashboard ou CLI, adicione `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` para Production (e Preview se quiser validar previews). A CLI interativa aceita `vercel env add VITE_SUPABASE_URL production` e `vercel env add VITE_SUPABASE_PUBLISHABLE_KEY production`; não use chave secret/service-role. Faça deploy com `vercel --prod` depois do link, ambiente e branch estarem corretos. A branch `codex/fake-loc-rebuild` ainda precisa de push confirmado antes de usar a integração Git.
+
 O runtime Node está fixado a `22.x` em `web/package.json`, compatível com as versões de jsdom e undici travadas no lockfile e disponível na Vercel. A regra SPA encaminha caminhos não reconhecidos ao documento inicial; arquivos estáticos continuam servidos como assets.
 
 Referências oficiais: [configuração `vercel.json`](https://vercel.com/docs/project-configuration/vercel-json), [Vite na Vercel](https://vercel.com/docs/frameworks/frontend/vite), [versões Node suportadas](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions).
