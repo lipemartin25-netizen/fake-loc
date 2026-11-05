@@ -1,0 +1,55 @@
+{
+  "name": "fake-loc-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fake Loc — Desktop application for GPS simulation (development and authorized testing)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "concurrently \"cd ../web && npm run dev\" \"wait-on http://127.0.0.1:5173 && electron .\"",
+    "build:web": "cd ../web && npm run build",
+    "pack": "npm run build:web && electron-builder --dir",
+    "dist:linux": "npm run build:web && electron-builder --linux AppImage deb",
+    "dist:win": "npm run build:web && electron-builder --win nsis",
+    "dist:mac": "npm run build:web && electron-builder --mac dmg"
+  },
+  "build": {
+    "appId": "br.com.fakeloc.desktop",
+    "productName": "Fake Loc",
+    "files": [
+      "main.js",
+      "preload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "webapp",
+        "filter": ["**/*"]
+      }
+    ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "electron-is-dev": "^3.0.1"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.0",
+    "concurrently": "^9.1.0",
+    "wait-on": "^8.0.0"
+  }
+}

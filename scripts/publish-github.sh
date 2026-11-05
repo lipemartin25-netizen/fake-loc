@@ -40,6 +40,8 @@ approved=(
   supabase/schema.sql supabase/remove_legacy_hooks.sql supabase/restrict_rls_event_trigger_execution.sql
   web/src/ui/App.tsx web/src/cloud.ts web/src/cloud.test.ts web/src/vite-env.d.ts web/.env.example
   scripts/doctor.sh scripts/publish-github.sh
+  .github/workflows/web.yml .github/workflows/android.yml .github/workflows/desktop.yml
+  desktop/package.json desktop/package-lock.json desktop/main.js desktop/preload.js
 )
 
 if ! git check-ignore -q web/.env.local; then echo 'Erro: web/.env.local não está ignorado pelo Git.' >&2; exit 3; fi

@@ -19,8 +19,9 @@
 | Busca externa, GPX/JSON, rotas | Parcial | GPX e JSON de favoritos implementados na web; busca e editor/playback de rotas não implementados |
 | Android | Parcial | Compose, movimento interno básico e motor geográfico; Geo compilado isoladamente; build bloqueado por SDK e localização mock ainda não ligada |
 | Supabase | Parcial | Schema Fake Loc aplicado com RLS; cliente web inclui Auth e sincronização opt-in de favoritos. Teste de isolamento com múltiplas contas reais pendente. |
-| GitHub | Pronto para publicação | Autenticado e verificado via `publish-github.sh` |
+| Desktop | Base implementada | Camada Electron com sandbox, contextIsolation, preload seguro e suporte a empacotamento Windows, Linux e macOS |
+| GitHub | Publicado | Branch remota `codex/fake-loc-rebuild` e PR #1 criados |
 | Vercel | Preparação local | Documentação atualizada para projeto `all-smal-things`; deploy e domínio público pendentes |
-| CI e APK | Pendente | Cadeia Android requer configuração de SDK (local ou runner CI) |
+| CI e APK | Em andamento | Workflows adicionados para Web (aprovado), Android (ajuste de sdkmanager no runner) e Desktop (Linux, Windows, macOS) |
 
 A localização simulada não foi validada em aparelho real. O projeto continua sendo uma ferramenta para testes e desenvolvimento autorizados sem injeção sistêmica no modo web/desktop.
