@@ -64,4 +64,7 @@ O `web/.env.example` está presente e não é ignorado; `web/.env.local` continu
 | `android/` | `./gradlew --version` | Wrapper baixou Gradle 8.9 e executou com OpenJDK 21 | 0 |
 | `android/` | `./gradlew test` | Falhou por ausência de Android SDK configurado (`ANDROID_HOME` ou `local.properties` ausentes) | 1 |
 | raiz | `bash -n scripts/publish-github.sh` | Sintaxe do script de publicação aprovada após correção de timeout interno | 0 |
-| raiz | `bash scripts/publish-github.sh --dry-run` | Remoto consultado com sucesso; branch remota `codex/fake-loc-rebuild` confirmada como ainda não existente | 0 |
+| raiz | `bash scripts/publish-github.sh` | Commit 6162103 e push para origin/codex/fake-loc-rebuild; PR #1 criado | 0 |
+| CI GitHub | Workflow `Web checks` (run 42087873518) | Node 22: npm ci, lint, typecheck, test, build aprovados | 0 |
+| CI GitHub | Workflow `Android checks` (run 42087887216) | Platform 35, Java 21, assembleDebug, testDebugUnitTest, lintDebug aprovados; gerado artefato `fake-loc-debug-apk` | 0 |
+| CI GitHub | Workflow `Desktop builds` (run 42087872068) | Electron builder gerou com sucesso artefatos para Windows (.exe), Linux (AppImage + .deb) e macOS (.dmg) | 0 |
