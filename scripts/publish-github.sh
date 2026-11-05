@@ -41,6 +41,7 @@ approved=(
   web/src/ui/App.tsx web/src/cloud.ts web/src/cloud.test.ts web/src/vite-env.d.ts web/.env.example
   scripts/doctor.sh scripts/publish-github.sh
   .github/workflows/web.yml .github/workflows/android.yml .github/workflows/desktop.yml
+  android/build.gradle.kts android/app/build.gradle.kts
   desktop/package.json desktop/package-lock.json desktop/main.js desktop/preload.js
 )
 

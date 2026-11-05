@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "Fake Loc — Desktop application for GPS simulation (development and authorized testing)",
+  "homepage": "https://github.com/lipemartin25-netizen/fake-loc",
+  "author": "Fake Loc Team <team@fakeloc.invalid>",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -29,7 +31,8 @@
     ],
     "linux": {
       "target": ["AppImage", "deb"],
-      "category": "Utility"
+      "category": "Utility",
+      "maintainer": "Fake Loc Team <team@fakeloc.invalid>"
     },
     "win": {
       "target": ["nsis"]

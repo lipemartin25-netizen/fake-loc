@@ -3,9 +3,26 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
 }
-android { namespace = "br.com.fakeloc.app"; compileSdk = 35
-    defaultConfig { applicationId = "br.com.fakeloc.app"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "0.1.0" }
-    buildFeatures { compose = true }
+android {
+    namespace = "br.com.fakeloc.app"
+    compileSdk = 35
+    defaultConfig {
+        applicationId = "br.com.fakeloc.app"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = "0.1.0"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        jvmTarget = "21"
+    }
+    buildFeatures {
+        compose = true
+    }
 }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.12.01"))
