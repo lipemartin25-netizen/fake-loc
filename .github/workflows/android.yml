@@ -8,11 +8,15 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - run: yes | sdkmanager --licenses
-      - run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-      - run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
+          java-version: '21'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Accept licenses and install platform
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Build and test Android
+        run: ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
         working-directory: android
       - uses: actions/upload-artifact@v4
         with:
