@@ -1,0 +1,67 @@
+name: Desktop builds
+on: [push, pull_request]
+jobs:
+  desktop-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install web dependencies and build
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+      - name: Package Linux
+        working-directory: desktop
+        run: npx electron-builder --linux AppImage deb --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fake-loc-desktop-linux
+          path: |
+            desktop/dist/*.AppImage
+            desktop/dist/*.deb
+
+  desktop-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install web dependencies and build
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+      - name: Package Windows
+        working-directory: desktop
+        run: npx electron-builder --win nsis --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fake-loc-desktop-windows
+          path: desktop/dist/*.exe
+
+  desktop-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install web dependencies and build
+        working-directory: web
+        run: npm ci && npm run build
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+      - name: Package macOS
+        working-directory: desktop
+        run: npx electron-builder --mac dmg --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fake-loc-desktop-macos
+          path: desktop/dist/*.dmg
