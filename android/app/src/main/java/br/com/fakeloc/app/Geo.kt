@@ -29,4 +29,15 @@ object Geo {
         val l2=l1+atan2(sin(bearing)*sin(arc)*cos(p1),cos(arc)-sin(p1)*sin(p2))
         return Coordinate(p2/rad,normalizeLongitude(l2/rad))
     }
+    fun projectCoordinate(origin: Coordinate, bearingDeg: Double, distanceMeters: Double): Coordinate {
+        if (!distanceMeters.isFinite() || distanceMeters == 0.0) return origin
+        val rad = Math.PI / 180.0
+        val p1 = origin.latitude * rad
+        val l1 = origin.longitude * rad
+        val arc = distanceMeters / EARTH_RADIUS_M
+        val bRad = ((bearingDeg % 360.0 + 360.0) % 360.0) * rad
+        val p2 = asin(sin(p1) * cos(arc) + cos(p1) * sin(arc) * cos(bRad))
+        val l2 = l1 + atan2(sin(bRad) * sin(arc) * cos(p1), cos(arc) - sin(p1) * sin(p2))
+        return Coordinate(p2 / rad, normalizeLongitude(l2 / rad))
+    }
 }

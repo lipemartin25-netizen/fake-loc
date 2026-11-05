@@ -29,3 +29,18 @@ export function interpolate(a: Coordinate,b: Coordinate,t: number): Coordinate {
   const l2=l1+Math.atan2(Math.sin(bearing)*Math.sin(ad)*Math.cos(p1),Math.cos(ad)-Math.sin(p1)*Math.sin(p2));
   return {latitude:p2*180/Math.PI,longitude:normalizeLongitude(l2*180/Math.PI)};
 }
+export function projectCoordinate(origin: Coordinate, bearingDeg: number, distanceMeters: number): Coordinate {
+  validateCoordinate(origin);
+  if (!Number.isFinite(distanceMeters) || distanceMeters === 0) return { ...origin };
+  const rad = Math.PI / 180;
+  const p1 = origin.latitude * rad;
+  const l1 = origin.longitude * rad;
+  const arc = distanceMeters / EARTH_RADIUS_M;
+  const bRad = ((bearingDeg % 360 + 360) % 360) * rad;
+  const p2 = Math.asin(Math.sin(p1) * Math.cos(arc) + Math.cos(p1) * Math.sin(arc) * Math.cos(bRad));
+  const l2 = l1 + Math.atan2(Math.sin(bRad) * Math.sin(arc) * Math.cos(p1), Math.cos(arc) - Math.sin(p1) * Math.sin(p2));
+  return validateCoordinate({
+    latitude: (p2 * 180) / Math.PI,
+    longitude: normalizeLongitude((l2 * 180) / Math.PI),
+  });
+}

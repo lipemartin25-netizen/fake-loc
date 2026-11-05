@@ -38,10 +38,15 @@ approved=(
   README.md docs/ACCEPTANCE.md docs/ARCHITECTURE.md docs/DEPLOY.md docs/PRIVACY.md
   docs/STATE.md docs/TEST-REPORT.md docs/SUPABASE_SETUP.md .gitignore
   supabase/schema.sql supabase/remove_legacy_hooks.sql supabase/restrict_rls_event_trigger_execution.sql
-  web/src/ui/App.tsx web/src/cloud.ts web/src/cloud.test.ts web/src/vite-env.d.ts web/.env.example
+  web/package.json web/package-lock.json web/vite.config.ts
+  web/src/geo.ts web/src/geo.test.ts web/src/fileFormats.ts web/src/fileFormats.test.ts
+  web/src/cloud.ts web/src/cloud.test.ts web/src/vite-env.d.ts web/.env.example
+  web/src/ui/App.tsx web/src/ui/App.test.tsx web/src/ui/RealMap.tsx web/src/ui/Joystick.tsx web/src/ui/style.css
   scripts/doctor.sh scripts/publish-github.sh
   .github/workflows/web.yml .github/workflows/android.yml .github/workflows/desktop.yml
   android/build.gradle.kts android/app/build.gradle.kts
+  android/app/src/main/java/br/com/fakeloc/app/Geo.kt
+  android/app/src/test/java/br/com/fakeloc/app/GeoTest.kt
   desktop/package.json desktop/package-lock.json desktop/main.js desktop/preload.js
 )
 
@@ -133,10 +138,11 @@ if ((${#changed[@]})); then
   git diff --cached --check
   git diff --cached --stat -- "${changed[@]}"
   if ! git diff --cached --quiet -- "${changed[@]}"; then
-    commit_message='Prepare Fake Loc Vercel project deployment'
+    commit_message='Implement real map with OpenStreetMap tiles and virtual joystick'
     for file in "${changed[@]}"; do
       case "$file" in
-        web/src/cloud.ts|web/src/ui/App.tsx|supabase/*.sql) commit_message='Configure Fake Loc Supabase integration'; break ;;
+        web/src/cloud.ts|supabase/*.sql) commit_message='Configure Fake Loc Supabase integration'; break ;;
+        desktop/*|.github/workflows/desktop.yml) commit_message='Configure desktop multiplatform build'; break ;;
       esac
     done
     git commit --only -m "$commit_message" -- "${changed[@]}"

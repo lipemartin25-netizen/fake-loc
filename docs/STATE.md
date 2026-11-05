@@ -13,10 +13,11 @@
 
 | Área | Estado | Evidência/limite |
 |---|---|---|
-| Motor geográfico web | Implementado com testes identificados | Geografia, validação e antimeridiano; 3 testes unitários |
-| Web vertical | Implementado com testes identificados | Coordenadas, telemetria, favoritos, GPX, JSON e cliente Supabase isolado; veja relatório de 12 testes |
-| Mapa | Parcial | Canvas esquemático interativo, sem tiles |
-| Busca externa, GPX/JSON, rotas | Parcial | GPX e JSON de favoritos implementados na web; busca e editor/playback de rotas não implementados |
+| Motor geográfico | Implementado com testes | Haversine, WGS84, antimeridiano, interpolação e projectCoordinate; 4 testes unitários TS e 3 testes Kotlin |
+| Web vertical | Implementado com testes | Coordenadas, telemetria, favoritos, GPX, JSON e cliente Supabase isolado; 13 testes unitários aprovados |
+| Mapa | Implementado | Mapa interativo com OpenStreetMap tiles (Leaflet), marcadores customizados, destino arrastável e polylines; fallback esquemático preservado |
+| Joystick | Implementado | Controle analógico por ponteiro/toque e teclado (W/A/S/D e setas) com teto monotônico de 200ms por frame |
+| Busca externa, GPX/JSON, rotas | Parcial | GPX e JSON de favoritos implementados na web; rotas multiponto e busca por texto pendentes |
 | Android | Compilado e testado em CI | Compose, Geo.kt e build `:app:assembleDebug` aprovados; APK debug gerado como artefato em CI |
 | Supabase | Parcial | Schema Fake Loc aplicado com RLS; cliente web inclui Auth e sincronização opt-in de favoritos. Teste de isolamento com múltiplas contas reais pendente. |
 | Desktop | Compilado em CI | Electron empacotado e gerado em CI para Windows (.exe), Linux (AppImage + .deb) e macOS (.dmg) |

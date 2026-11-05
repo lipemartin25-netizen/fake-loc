@@ -15,4 +15,16 @@ class GeoTest {
         assertEquals(180.0, kotlin.math.abs(Geo.interpolate(west,east,0.5).longitude),1e-8)
         try { Coordinate(90.1,0.0); throw AssertionError("expected invalid latitude") } catch (_: IllegalArgumentException) { }
     }
+    @Test fun projectsCoordinateAlongBearingAndDistance() {
+        val start = Coordinate(0.0, 0.0)
+        val north = Geo.projectCoordinate(start, 0.0, 111195.0)
+        assertEquals(1.0, north.latitude, 0.05)
+        assertEquals(0.0, north.longitude, 1e-4)
+
+        val east = Geo.projectCoordinate(start, 90.0, 111195.0)
+        assertEquals(0.0, east.latitude, 1e-4)
+        assertEquals(1.0, east.longitude, 0.05)
+
+        assertEquals(start, Geo.projectCoordinate(start, 45.0, 0.0))
+    }
 }
