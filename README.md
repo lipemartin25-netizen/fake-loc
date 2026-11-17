@@ -1,32 +1,102 @@
 # Fake Loc
 
-Ferramenta local de simulação de localização para desenvolvimento, demonstração e testes autorizados. Não altera o GPS global no navegador e não inclui integração com jogos ou mecanismos de ocultação.
+Ferramenta de simulação de localização e telemetria para desenvolvimento, demonstração e testes autorizados de software georreferenciado.
 
-## Estado desta reconstrução
+A aplicação opera de forma puramente interna por padrão. **Não altera o GPS global do dispositivo móvel nem do sistema operacional desktop, não contorna proteções de segurança e não realiza injeção em aplicativos de terceiros.**
 
-O projeto foi consolidado em `/home/felipe/Documentos/gps fak` preservando o histórico local da reconstrução e integrando o commit base `b3b8a0d` do checkout ligado ao remoto. O estado atual do GitHub não pôde ser consultado neste ambiente. Consulte [docs/STATE.md](docs/STATE.md) e [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md) para implementação, validação e pendências.
+---
 
-## Web
+## 1. Visão Geral das Plataformas
 
-Requer Node.js 22.x. Em `web/`: `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test` e `npm run build`. Favoritos são armazenados localmente no navegador. O mapa é esquemático, sem tiles; busca geográfica e mapas reais ainda não estão configurados. Para deploy, siga [docs/DEPLOY.md](docs/DEPLOY.md).
+| Plataforma | Interface / Tecnologia | Comportamento e Limites |
+| :--- | :--- | :--- |
+| **Web** | React + TypeScript + Vite + Leaflet | Simulação interna com mapa geográfico (OpenStreetMap) ou esquemático; controle por joystick virtual e teclado; importação/exportação GPX/JSON; sincronização de favoritos via Supabase (opcional). |
+| **Desktop** | Electron (Linux, Windows, macOS) | Empacotamento desktop seguro (`nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`). Opera com a mesma simulação interna e arquivos locais. Não altera o provedor de localização do SO. |
+| **Android** | Kotlin + Jetpack Compose | Aplicativo demonstrativo de simulação interna de coordenadas em tela. Mock Location Provider sistêmico e serviço de primeiro plano não estão ativos nesta versão. |
+| **Nuvem (Opcional)** | Supabase (PostgreSQL + RLS) | Sincronização sob demanda de favoritos entre dispositivos para usuários cadastrados. Telemetria e histórico não são transmitidos. |
 
-## Android
+---
 
-Aplicativo nativo Kotlin/Compose parcial. Requer JDK 17 ou superior e Android SDK 35 conforme [android/README.md](android/README.md). Localização simulada do sistema ainda não está implementada. O APK debug não foi gerado neste ambiente.
+## 2. Requisitos de Ambiente
 
-## Privacidade e limites
+- **Node.js**: Versão `22.x` (LTS recomendada, ex.: `22.23.4`).
+- **npm**: Versão `10.x` ou superior.
+- **Java / JDK** (para builds Android): OpenJDK 17 ou 21.
+- **Android SDK** (para compilação local Android): API 35 (`platforms;android-35` e `build-tools;35.0.0`).
 
-Nenhuma telemetria externa está configurada. A simulação web não altera o GPS do aparelho. Não há garantia de compatibilidade com aplicativos terceiros. Distâncias usam Haversine sobre esfera de raio 6.371.008,8 m; não são distâncias rodoviárias.
-# Fake Loc
+---
 
-Ferramenta de simulação de localização para desenvolvimento, demonstração e testes autorizados. A simulação web é interna ao navegador e não muda a localização global do dispositivo nem controla outros aplicativos.
+## 3. Instruções de Execução e Desenvolvimento
 
-## Web
+### Aplicação Web
 
-```sh
-cd web
-npm ci
-npm run dev
-```
+1. Acesse a pasta `web/` e instale as dependências:
+   ```bash
+   cd web
+   npm ci
+   ```
+2. Para iniciar o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+   Acesse a URL exibida no terminal (por padrão `http://localhost:5173`).
 
-Para sincronização opcional de favoritos, copie `.env.example` para `.env.local` e preencha as variáveis publishable do projeto Fake Loc. Sem configuração/conta, o modo local funciona normalmente. Consulte [configuração do Supabase](docs/SUPABASE_SETUP.md), [privacidade](docs/PRIVACY.md) e [matriz de aceite](docs/ACCEPTANCE.md).
+3. Para executar a suíte completa de verificações e testes:
+   ```bash
+   npm run lint        # Verificação de estilo com ESLint
+   npm run typecheck   # Checagem estática de tipos com TypeScript
+   npm test            # Execução de testes unitários com Vitest
+   npm run build       # Build de produção otimizado em web/dist/
+   ```
+
+### Aplicação Desktop (Electron)
+
+1. Acesse a pasta `desktop/` e instale as dependências:
+   ```bash
+   cd desktop
+   npm ci
+   ```
+2. Para empacotar os binários locais:
+   ```bash
+   npm run pack        # Gera versão descompactada de teste em desktop/dist/
+   ```
+3. Para gerar instaladores distribuíveis (conforme a plataforma):
+   - Linux: `npm run dist:linux` (gera .AppImage e .deb)
+   - Windows: `npm run dist:win` (gera instalador NSIS .exe)
+   - macOS: `npm run dist:mac` (gera imagem .dmg)
+
+### Aplicativo Android
+
+1. Acesse a pasta `android/`:
+   ```bash
+   cd android
+   ```
+2. Para compilar o APK de depuração e rodar os testes unitários:
+   ```bash
+   ./gradlew :app:assembleDebug :app:testDebugUnitTest
+   ```
+   O APK gerado ficará em `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+---
+
+## 4. Nuvem e Sincronização Opcional (Supabase)
+
+O Fake Loc funciona perfeitamente sem nenhuma conexão com a nuvem. Caso deseje habilitar a sincronização opcional de favoritos:
+1. Copie o arquivo de exemplo:
+   ```bash
+   cp web/.env.example web/.env.local
+   ```
+2. Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` com os dados do seu projeto Supabase.
+3. Consulte o [Guia de Configuração do Supabase](docs/SUPABASE_SETUP.md) para detalhes de segurança e aplicação de esquemas não destrutivos.
+
+---
+
+## 5. Documentação Complementar
+
+- [Arquitetura do Projeto](docs/ARCHITECTURE.md)
+- [Matriz de Aceite e Funcionalidades](docs/ACCEPTANCE.md)
+- [Segurança e Privacidade](docs/PRIVACY.md)
+- [Configuração do Banco Supabase](docs/SUPABASE_SETUP.md)
+- [Guia de Deploy na Vercel](docs/DEPLOY.md)
+- [Dependências de Terceiros e Licenças](docs/THIRD-PARTY.md)
+- [Relatório de Validação e Testes](docs/TEST-REPORT.md)

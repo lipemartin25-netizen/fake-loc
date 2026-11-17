@@ -1,5 +1,7 @@
--- Remove the previous product's auth hook and unused public RPCs. The old
--- on_auth_user_created trigger targeted public.profiles, which was replaced.
+-- AVISO HISTÓRICO: Este script foi utilizado exclusivamente para limpar gatilhos e funções
+-- de um projeto legado reutilizado anteriormente.
+-- NÃO EXECUTE este script em novos projetos Supabase limpos nem em instâncias compartilhadas.
+
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
 DROP FUNCTION IF EXISTS public.calculate_couple_balance(uuid) CASCADE;

@@ -109,6 +109,16 @@ export default function App() {
     }
   };
 
+  const deleteFav = async (f: FavoriteRecord) => {
+    try {
+      await supabaseCloud.deleteFavorite(f.id);
+      setFavorites((v) => v.filter((x) => x.id !== f.id));
+      setError('');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Falha ao excluir favorito na nuvem. A exclusão local foi abortada para evitar inconsistências.');
+    }
+  };
+
   const importJson = async (file: File | null) => {
     if (!file) return;
     if (file.size > 5_000_000) {
@@ -380,10 +390,7 @@ export default function App() {
                 </button>
                 <button
                   aria-label={`Excluir ${f.name}`}
-                  onClick={() => {
-                    supabaseCloud.markFavoriteDeleted(f.id);
-                    setFavorites((v) => v.filter((x) => x.id !== f.id));
-                  }}
+                  onClick={() => void deleteFav(f)}
                 >
                   ×
                 </button>

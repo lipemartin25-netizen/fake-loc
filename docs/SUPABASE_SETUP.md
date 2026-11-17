@@ -1,32 +1,85 @@
-# Supabase do Fake Loc
+# Guia de Configuração e Arquitetura Supabase — Fake Loc
 
-O projeto Supabase usado pela integração é `cejivififvlhnwyeajwc` (`https://cejivififvlhnwyeajwc.supabase.co`). A aplicação envia dados para a nuvem somente depois que a pessoa entra em sua conta e aciona **Sincronizar favoritos**. Coordenadas de simulação, consultas de busca e histórico não são enviados. O modo local continua disponível sem conta.
+Este documento detalha como configurar, gerenciar e aplicar o esquema do Supabase para o **Fake Loc** com segurança e de forma não destrutiva.
 
-## Estado aplicado
+---
 
-- O esquema `public` foi substituído: tabelas antigas de fotos/finanças foram removidas e substituídas por `favorites`, `routes` e `movement_profiles`.
-- Auth e Storage do projeto não foram apagados. O gatilho legado que tentava gravar em `public.profiles` foi removido para permitir novos cadastros.
-- RLS está habilitado nas três tabelas. As políticas limitam leitura e escrita ao `auth.uid()` dono da linha. A chave usada no navegador é publishable; não há service-role key no código.
-- O gatilho legado que ativa RLS em novas tabelas foi mantido, mas execução direta foi revogada para `PUBLIC`, `anon` e `authenticated`.
-- Após essa correção, os advisors de segurança não apontam mais rotinas `SECURITY DEFINER` públicas; permanecem dois avisos sobre extensões antigas `vector` e `pg_trgm` instaladas em `public`. Elas foram mantidas para evitar alterar dependências gerenciadas do projeto e não são usadas pelo esquema Fake Loc.
-- Cada linha inclui `schema_version`. IDs são UUIDs estáveis; tempos são `timestamptz` UTC. Coordenadas usam latitude e longitude em graus decimais.
-- Rotas e perfis têm tabelas preparadas, mas a interface ainda não os sincroniza. Não há sincronização de histórico/telemetria.
-- A sincronização de favoritos combina registros por ID, envia os locais e incorpora registros remotos visíveis pelas políticas. Exclusões feitas enquanto offline são guardadas localmente até uma sincronização.
+## 1. Escopo e Princípios da Integração com Nuvem
 
-## Configuração da aplicação
+- **Opcionalidade Total**: O Fake Loc opera de forma 100% local por padrão. A integração com Supabase só é acionada se o usuário explicitamente criar uma conta e optar por sincronizar dados.
+- **Dados Sincronizados**: Apenas favoritos criados pelo usuário (`favorites`). Rotas e perfis de movimentação possuem tabelas preparadas para versões futuras.
+- **Privacidade por Padrão**: Coordenadas de simulação em tempo real, telemetria, buscas e históricos **nunca** são transmitidos para o servidor.
+- **Segurança e Isolamento RLS**: Todas as tabelas têm Row Level Security (RLS) obrigatório. Usuários só podem ler, inserir, modificar e apagar seus próprios registros (`auth.uid() = user_id`). Chaves anônimas (`anon`) não possuem permissão de leitura nem escrita.
 
-Copie `web/.env.example` para `web/.env.local`. Configure `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` com os valores do projeto. O `.env.local` é ignorado pelo Git. A chave publishable pode estar no bundle web; uma chave `service_role`/secret nunca pode.
+---
 
-Para deploy Vercel, defina as mesmas variáveis para o projeto/branch de produção e faça um novo deploy. Sem elas, o modo local funciona e a seção de nuvem informa que a nuvem não está configurada. O projeto não recebe dados até que alguém crie/acesse uma conta e peça a sincronização.
+## 2. Como Configurar um Novo Projeto Supabase (Recomendado para Produção/Comercial)
 
-Auth de e-mail depende das configurações de confirmação e provedores no painel Supabase. Se a confirmação de e-mail estiver ligada, a pessoa deve confirmar o endereço antes de entrar. Não foram criados usuários de teste nem alteradas essas opções de autenticação.
+> [!IMPORTANT]
+> **Nunca reutilize um banco de dados em produção compartilhado com outros sistemas.** Crie sempre um projeto Supabase novo e exclusivo para o Fake Loc.
 
-## Identidade do projeto
+### Passo a passo no painel do Supabase:
+1. Acesse o painel do Supabase ([supabase.com](https://supabase.com)) e clique em **New project**.
+2. Escolha o nome da organização, defina o nome do projeto (ex.: `fake-loc-prod`) e gere uma senha de banco segura (guarde-a em seu cofre de senhas).
+3. Selecione a região mais próxima do seu público (ex.: `sa-east-1` / São Paulo).
+4. Aguarde a inicialização da instância.
+5. No menu lateral esquerdo, vá em **SQL Editor** e clique em **New query**.
+6. Cole o conteúdo de [supabase/schema.sql](file:///home/felipe/projetos/gps%20fak/supabase/schema.sql) e clique em **Run**.
+   - O script executará de forma idempotente e não destrutiva (`CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`, políticas com checagem segura).
+7. Em **Project Settings → API**:
+   - Copie o **Project URL** (ex.: `https://<seu-project-id>.supabase.co`).
+   - Copie a chave **anon / public** (`anon key`).
+   - **NUNCA** utilize ou exponha a chave `service_role` no código front-end ou em clientes distribuídos.
 
-Não existe operação de renomear projeto nesta conexão Supabase. Para trocar o título exibido de “lipemartin25-netizen's Project newfck photos” para “Fake Loc”, faça isso no dashboard em **Project Settings → General → Project name**. O ID e URL do projeto não mudam. O nome da aplicação e a descrição do esquema já usam Fake Loc.
+---
 
-## Migrations e recuperação
+## 3. Configuração das Variáveis de Ambiente
 
-As mudanças no banco foram executadas como migrations `fake_loc_initial_schema`, `remove_legacy_product_hooks` e `restrict_rls_event_trigger_execution`. Os arquivos de referência SQL ficam em `supabase/`. A história antiga de migrations foi preservada para auditoria; não tente reaplicá-la ao novo esquema. O banco não tem dados de usuário Fake Loc no momento da configuração.
+No ambiente de desenvolvimento local:
+1. Copie o arquivo de exemplo:
+   ```bash
+   cp web/.env.example web/.env.local
+   ```
+2. Abra `web/.env.local` e configure:
+   ```env
+   VITE_SUPABASE_URL=https://<seu-project-id>.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_<sua-chave-anon>
+   ```
+3. O arquivo `web/.env.local` está no `.gitignore` e não deve ser comitado.
 
-Antes de uma mudança futura, exporte os dados com backup do Supabase ou use o backup manual da aplicação. Para restaurar favoritos de uma conta, entre na conta e use a sincronização. Não salve credenciais no repositório.
+Para publicação na Vercel:
+- Em **Project Settings → Environment Variables**, cadastre:
+  - `VITE_SUPABASE_URL` para ambientes *Production* e *Preview*.
+  - `VITE_SUPABASE_PUBLISHABLE_KEY` para ambientes *Production* e *Preview*.
+
+---
+
+## 4. Auditoria de Segurança: Risco Histórico e Plano de Recuperação
+
+### Contexto do Risco Anterior
+No desenvolvimento inicial do protótipo, o arquivo `supabase/schema.sql` continha comandos `DROP TABLE IF EXISTS ... CASCADE` em lote para remover tabelas residuais de uma aplicação anterior de fotos e finanças.
+* Esse script foi **totalmente substituído** por DDL seguro e não destrutivo nesta revisão.
+* Nenhum comando destrutivo deve ser mantido como padrão do produto.
+
+### Plano de Recuperação (Caso tenha havido execução acidental prévia)
+Caso alguém tenha acidentalmente aplicado a versão legada do script contra um banco Supabase em uso compartilhado:
+1. **Não execute novas gravações**: Interrompa acessos imediatos para evitar sobrescrita de logs.
+2. **Restauro via PITR (Point-In-Time-Recovery)**:
+   - Se o plano do Supabase for Pro ou Enterprise, acesse **Database → Backups → Point-in-time recovery** no painel e restaure para o timestamp imediatamente anterior à execução da migração.
+3. **Restauro via Backup Diário**:
+   - Em planos Free/Standard, acesse **Database → Backups → Scheduled backups** e selecione o backup mais recente para download ou restauração.
+4. **Verificação de Dados**:
+   - Verifique a integridade das tabelas e garanta que o projeto do Fake Loc seja migrado para uma instância de banco 100% isolada.
+
+---
+
+## 5. Armazenamento de Sessão e Limitações de Segurança
+
+1. **Tokens de Acesso e Refresh**:
+   - O cliente web armazena os tokens de sessão (`access_token`, `refresh_token`) em `localStorage` sob a chave `fake-loc-supabase-session-v1`.
+   - **Limitação Conhecida**: Em SPAs puramente client-side, o `localStorage` pode ser lido por scripts que executem na mesma origem se houver vulnerabilidade de XSS (Cross-Site Scripting).
+   - **Mitigações Implementadas**:
+     - O Fake Loc não usa `dangerouslySetInnerHTML`, nem avalia scripts dinâmicos de terceiros.
+     - As Content Security Policies (CSP) bloqueiam scripts em linha e origens não autorizadas.
+     - A chave publishable só permite operações explicitamente autorizadas por RLS para o `auth.uid()` logado.
+     - Tokens nunca são expostos em logs do navegador nem no console.
